@@ -1,0 +1,71 @@
+{
+  "workbench.startupEditor": "none",
+  "workbench.iconTheme": "material-icon-theme",
+  "liveServer.settings.donotShowInfoMsg": true,
+  "editor.formatOnSave": true,
+  "files.autoSave": "onFocusChange",
+  "settingsSync.ignoredExtensions": [],
+  "workbench.settings.useSplitJSON": true,
+  "gitlens.gitCommands.skipConfirmations": [
+    "fetch:command",
+    "switch:command",
+    "stash-apply:command",
+    "stash-push:command"
+  ],
+  "editor.renderWhitespace": "all",
+  "editor.detectIndentation": false,
+  "editor.tabSize": 2,
+  "eslint.validate": ["typescript"],
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "material-icon-theme.activeIconPack": "react",
+  "javascript.preferences.quoteStyle": "single",
+  "typescript.preferences.quoteStyle": "single",
+
+  "editor.formatOnSave": true,
+  "editor.wordWrap": "on",
+  "diffEditor.wordWrap": "on",
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "emmet.includeLanguages": {
+    "ejs": "html"
+  },
+  "files.eol": "\n",
+  "workbench.colorTheme": "GitHub Dark",
+  "scss.validate": false,
+  "css.validate": false,
+  "less.validate": false,
+  "editor.codeActionsOnSave": {
+    "source.addMissingImports": "explicit",
+    "source.organizeImports": "never",
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.stylelint": "explicit"
+  },
+  "stylelint.validate": ["css", "less", "scss"],
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "editor.wordWrapColumn": 200,
+  "diffEditor.hideUnchangedRegions.enabled": true,
+  "diffEditor.experimental.showMoves": true,
+  "breadcrumbs.filePath": "on",
+  "breadcrumbs.showClasses": false,
+  "breadcrumbs.symbolPath": "off",
+  "window.density.editorTabHeight": "compact",
+  "editor.linkedEditing": true,
+  "cSpell.language": "en,ru",
+  "cSpell.userWords": [],
+  "cSpell.diagnosticLevel": "Information",
+  "redhat.telemetry.enabled": true,
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "makefile.configureOnOpen": false,
+  "editor.minimap.renderCharacters": false,
+  "editor.comments.insertSpace": false,
+  "terminal.integrated.suggest.builtinCompletions": {
+    "pwshCode": true,
+    "pwshGit": true
+  },
+  "git.confirmSync": false,
+  "eslint.useFlatConfig": false,
+  "diffEditor.ignoreTrimWhitespace": false
+}
