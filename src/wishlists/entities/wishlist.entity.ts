@@ -18,6 +18,6 @@ export class Wishlist extends BaseEntity {
   @JoinTable()
   items: Wish[];
 
-  @ManyToOne(() => User, (user) => user.wishes, { eager: true })
+  @ManyToOne(() => User, (user) => user.wishes)
   owner: User;
 }
