@@ -50,8 +50,12 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findMany(search: string) {
+    const users = await this.usersRepository.find({
+      where: [{ username: search }, { email: search }],
+    });
+
+    return users;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
