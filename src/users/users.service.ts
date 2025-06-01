@@ -6,9 +6,11 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { plainToInstance } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { UserResponseDto } from './dto/response-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -42,17 +44,34 @@ export class UsersService {
     });
 
     const savedUser = await this.usersRepository.save(user);
-    delete savedUser.password;
 
-    return savedUser;
+    return plainToInstance(UserResponseDto, savedUser, {
+      excludeExtraneousValues: true,
+    });
   }
 
   findAll() {
     return `This action returns all users`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const userId = Number(id);
+    const user = await this.usersRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException('Пользователь не найден');
+    }
+
+    const updateData = { ...updateUserDto };
+    if (updateData.password) {
+      updateData.password = await bcrypt.hash(updateData.password, 10);
+    }
+
+    Object.assign(user, updateData);
+    const updated = await this.usersRepository.save(user);
+
+    return plainToInstance(UserResponseDto, updated, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async findByUsername(username: string) {
