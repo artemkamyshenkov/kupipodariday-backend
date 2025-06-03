@@ -2,7 +2,7 @@ import { Expose } from 'class-transformer';
 
 export class UserResponseDto {
   @Expose()
-  id: string; // если есть ID
+  id: string;
 
   @Expose()
   username: string;
@@ -15,4 +15,10 @@ export class UserResponseDto {
 
   @Expose()
   email: string;
+
+  @Expose()
+  createdAt: string;
+
+  @Expose()
+  updatedAt: string;
 }

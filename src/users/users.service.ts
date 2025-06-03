@@ -4,19 +4,22 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import { UserResponseDto } from './dto/response-user.dto';
+import { Wish } from '../wishes/entities/wish.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Wish)
+    private wishesRepository: Repository<Wish>,
   ) {}
 
   async findOne(id: string) {
@@ -52,10 +55,15 @@ export class UsersService {
 
   async findMany(search: string) {
     const users = await this.usersRepository.find({
-      where: [{ username: search }, { email: search }],
+      where: [
+        { username: ILike(`%${search}%`) },
+        { email: ILike(`%${search}%`) },
+      ],
     });
 
-    return users;
+    return plainToInstance(UserResponseDto, users, {
+      excludeExtraneousValues: true,
+    });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -84,5 +92,18 @@ export class UsersService {
     });
 
     return user;
+  }
+
+  async findUserWishes(userId: string) {
+    const wish = await this.wishesRepository.find({
+      where: {
+        owner: {
+          id: Number(userId),
+        },
+      },
+      relations: ['owner'],
+    });
+
+    return wish;
   }
 }
