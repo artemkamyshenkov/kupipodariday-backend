@@ -9,10 +9,12 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtGuard } from '../auth/guards/jwt-auth.guard';
+import { WishResponseDto } from './dto/response-wish.dto';
 
 @Controller('wishes')
 export class WishesController {
@@ -30,8 +32,12 @@ export class WishesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const wish = await this.wishesService.findOne(id);
+
+    return plainToInstance(WishResponseDto, wish, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Patch(':id')

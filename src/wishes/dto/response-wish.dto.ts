@@ -29,4 +29,10 @@ export class WishResponseDto {
   @Expose()
   @Type(() => UserResponseDto)
   owner: UserResponseDto;
+
+  @Expose()
+  createdAt: string;
+
+  @Expose()
+  updatedAt: string;
 }
