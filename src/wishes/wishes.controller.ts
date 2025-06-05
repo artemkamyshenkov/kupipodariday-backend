@@ -20,6 +20,24 @@ import { WishResponseDto } from './dto/response-wish.dto';
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  @Get('top')
+  async findMostPopularWished() {
+    const wish = await this.wishesService.findMostPopularWishes();
+
+    return plainToInstance(WishResponseDto, wish, {
+      excludeExtraneousValues: true,
+    });
+  }
+
+  @Get('last')
+  async findLastAddedWished() {
+    const wish = await this.wishesService.findLastAddedWishes();
+
+    return plainToInstance(WishResponseDto, wish, {
+      excludeExtraneousValues: true,
+    });
+  }
+
   @UseGuards(JwtGuard)
   @Post()
   create(@Body() createWishDto: CreateWishDto, @Request() req) {
@@ -47,6 +65,6 @@ export class WishesController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+    return this.wishesService.remove(id);
   }
 }

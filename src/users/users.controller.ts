@@ -70,8 +70,10 @@ export class UsersController {
   @Get(':username/wishes')
   getWishesByUsername(@Param() param: { username: string }) {
     const { username } = param;
-    const user = this.usersService.findByUsername(username);
+    const wishes = this.usersService.findWishesByUsername(username);
 
-    return [];
+    return plainToInstance(WishResponseDto, wishes, {
+      excludeExtraneousValues: true,
+    });
   }
 }

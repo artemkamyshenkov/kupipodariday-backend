@@ -106,4 +106,17 @@ export class UsersService {
 
     return wish;
   }
+
+  async findWishesByUsername(username: string) {
+    const wish = await this.wishesRepository.find({
+      where: {
+        owner: {
+          username,
+        },
+      },
+      relations: ['owner'],
+    });
+
+    return wish;
+  }
 }

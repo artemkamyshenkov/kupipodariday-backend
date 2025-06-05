@@ -11,7 +11,7 @@ import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
@@ -22,7 +22,7 @@ export class WishlistsController {
 
   @Get()
   findAll() {
-    return this.wishlistsService.findAll();
+    return [];
   }
 
   @Get(':id')

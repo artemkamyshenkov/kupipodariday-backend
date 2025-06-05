@@ -46,7 +46,41 @@ export class WishesService {
     return `This action updates a #${id} wish`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wish`;
+  async remove(id: string) {
+    const wish = await this.wishesRepository.findOne({
+      where: { id: Number(id) },
+    });
+
+    if (!wish) {
+      throw new NotFoundException(`Подарок с id ${id} не найден`);
+    }
+
+    await this.wishesRepository.remove(wish);
+
+    return wish;
+  }
+
+  async findLastAddedWishes() {
+    const wishes = await this.wishesRepository.find({
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 40,
+      relations: ['owner'],
+    });
+
+    return wishes;
+  }
+
+  async findMostPopularWishes() {
+    const wishes = await this.wishesRepository.find({
+      order: {
+        copied: 'DESC',
+      },
+      take: 20,
+      relations: ['owner'],
+    });
+
+    return wishes;
   }
 }
