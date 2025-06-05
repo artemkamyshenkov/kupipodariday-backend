@@ -8,9 +8,6 @@ export class Wishlist extends BaseEntity {
   @Column({ length: 250 })
   name: string;
 
-  @Column({ length: 1500 })
-  description: string;
-
   @Column()
   image: string;
 

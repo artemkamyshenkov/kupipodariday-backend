@@ -6,23 +6,34 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
+import { JwtGuard } from '../auth/guards/jwt-auth.guard';
+import { WishlistResponseDto } from './dto/response-wishlist.dto';
 
 @Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
+  @UseGuards(JwtGuard)
   @Post()
-  create(@Body() createWishlistDto: CreateWishlistDto) {
-    return this.wishlistsService.create(createWishlistDto);
+  create(@Request() req, @Body() createWishlistDto: CreateWishlistDto) {
+    return this.wishlistsService.create(createWishlistDto, req.user);
   }
 
+  @UseGuards(JwtGuard)
   @Get()
-  findAll() {
-    return [];
+  findAll(@Request() req) {
+    const wishlists = this.wishlistsService.findAll(req.user);
+
+    return plainToInstance(WishlistResponseDto, wishlists, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @Get(':id')
