@@ -26,27 +26,8 @@ export class CreateWishDto {
   )
   price: number;
 
-  // @IsNumber(
-  //  { maxDecimalPlaces: 2 },
-  //  {
-  //    message:
-  //      'Сумма сбора должна быть числом с максимум 2 знаками после запятой',
-  //  },
-  // )
-  // raised: number;
-
-  // @IsNotEmpty()
-  // owner: CreateUserDto[];
-
   @IsString()
   @MinLength(1, { message: 'Описание не может быть пустым' })
   @MaxLength(1024, { message: 'Описание не может быть длиннее 1024 символов' })
   description: string;
-
-  // @IsArray()
-  // @IsOptional()
-  // offers?: any;
-
-  // @IsInt()
-  // copied: number;
 }

@@ -3,18 +3,18 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   UseGuards,
   Request,
+  Patch,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
-import { UpdateWishDto } from './dto/update-wish.dto';
 import { JwtGuard } from '../auth/guards/jwt-auth.guard';
 import { WishResponseDto } from './dto/response-wish.dto';
+import { UpdateWishDto } from './dto/update-wish.dto';
 
 @Controller('wishes')
 export class WishesController {
@@ -44,11 +44,17 @@ export class WishesController {
     return this.wishesService.create(createWishDto, req.user);
   }
 
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
+  @UseGuards(JwtGuard)
+  @Post(':id/copy')
+  async copy(@Param() param: { id: string }, @Request() req) {
+    const wish = await this.wishesService.copyWish(param.id, req.user);
+
+    return plainToInstance(WishResponseDto, wish, {
+      excludeExtraneousValues: true,
+    });
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const wish = await this.wishesService.findOne(id);
@@ -58,13 +64,24 @@ export class WishesController {
     });
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+id, updateWishDto);
-  }
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.wishesService.remove(id);
+  }
+
+  @UseGuards(JwtGuard)
+  @Patch(':id')
+  async update(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() updateWishDto: UpdateWishDto,
+  ) {
+    const wish = await this.wishesService.updateWish(
+      id,
+      updateWishDto,
+      req.user,
+    );
+
+    return wish;
   }
 }
