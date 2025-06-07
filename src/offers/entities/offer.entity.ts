@@ -5,10 +5,10 @@ import { Wish } from '../../wishes/entities/wish.entity';
 
 @Entity()
 export class Offer extends BaseEntity {
-  @ManyToOne(() => User, (user) => user.offers, { cascade: true })
+  @ManyToOne(() => User, (user) => user.offers)
   user: User;
 
-  @ManyToOne(() => Wish, (wish) => wish.offers, { cascade: true })
+  @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
 
   @Column('decimal', { precision: 10, scale: 2 })

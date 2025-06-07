@@ -1,5 +1,6 @@
-import { Expose, Type } from 'class-transformer';
+import { Expose, Type, Transform } from 'class-transformer';
 import { UserResponseDto } from '../../users/dto/response-user.dto';
+import { OfferResponseDto } from '../../offers/dto/response-offer.dto';
 
 export class WishResponseDto {
   @Expose()
@@ -18,6 +19,7 @@ export class WishResponseDto {
   price: number;
 
   @Expose()
+  @Transform(({ value }) => Number(value).toFixed(2))
   raised: number;
 
   @Expose()
@@ -29,6 +31,10 @@ export class WishResponseDto {
   @Expose()
   @Type(() => UserResponseDto)
   owner: UserResponseDto;
+
+  @Expose()
+  @Type(() => OfferResponseDto)
+  offers: OfferResponseDto[];
 
   @Expose()
   createdAt: string;

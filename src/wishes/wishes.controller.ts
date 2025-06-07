@@ -64,9 +64,10 @@ export class WishesController {
     });
   }
 
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.wishesService.remove(id, req.user.id);
   }
 
   @UseGuards(JwtGuard)

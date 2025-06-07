@@ -33,7 +33,7 @@ export class WishesService {
       where: {
         id: Number(id),
       },
-      relations: ['owner'],
+      relations: ['owner', 'offers', 'offers.user'],
     });
 
     if (!wish) {
@@ -43,7 +43,7 @@ export class WishesService {
     return wish;
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
     const wish = await this.wishesRepository.findOne({
       where: { id: Number(id) },
     });
@@ -52,6 +52,9 @@ export class WishesService {
       throw new NotFoundException(`Подарок с id ${id} не найден`);
     }
 
+    if (Number(userId) !== wish.owner.id) {
+      throw new ForbiddenException('Вы не можете редактировать чужой подарок');
+    }
     await this.wishesRepository.remove(wish);
 
     return wish;
@@ -129,6 +132,18 @@ export class WishesService {
     Object.assign(wish, updateWishDto);
 
     const saved = await this.wishesRepository.save(wish);
+
+    return saved;
+  }
+
+  async addRaisedAmount(wish: Wish, amount: number) {
+    const currentRaised = parseFloat(wish.raised.toString());
+    const newAmount = parseFloat(amount.toString());
+    const updatedWish = {
+      ...wish,
+      raised: currentRaised + newAmount,
+    };
+    const saved = await this.wishesRepository.save(updatedWish);
 
     return saved;
   }
