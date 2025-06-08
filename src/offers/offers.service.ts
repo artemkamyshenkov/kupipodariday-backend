@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateOfferDto } from './dto/create-offer.dto';
@@ -44,11 +48,17 @@ export class OffersService {
     return savedOffer;
   }
 
-  findAll() {
-    return `This action returns all offers`;
-  }
+  async findOne(id: string) {
+    const offer = await this.offersRepository.findOne({
+      where: {
+        id: Number(id),
+      },
+      relations: ['user', 'item'],
+    });
+    if (!offer) {
+      throw new NotFoundException('Предложение с таким id не найдено');
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} offer`;
+    return offer;
   }
 }

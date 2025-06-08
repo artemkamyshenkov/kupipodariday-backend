@@ -23,13 +23,17 @@ export class OffersController {
     return offer;
   }
 
+  @UseGuards(JwtGuard)
   @Get()
   findAll() {
-    return this.offersService.findAll();
+    /** В задании нет объяснения что должен возвращать эндпоинт и фронт не использует его */
+    return [];
   }
 
+  @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.offersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const offer = await this.offersService.findOne(id);
+    return offer;
   }
 }
