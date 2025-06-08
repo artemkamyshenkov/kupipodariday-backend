@@ -1,19 +1,22 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
-import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { User } from '../users/entities/user.entity';
 import { Wishlist } from './entities/wishlist.entity';
-import { Wish } from '../wishes/entities/wish.entity';
+import { WishesService } from '../wishes/wishes.service';
 
 @Injectable()
 export class WishlistsService {
   constructor(
     @InjectRepository(Wishlist)
     private wishlistRepository: Repository<Wishlist>,
-    @InjectRepository(Wish)
-    private wishesRepository: Repository<Wish>,
+    private readonly wishService: WishesService,
   ) {}
 
   async create(createWishlistDto: CreateWishlistDto, owner: User) {
@@ -22,15 +25,13 @@ export class WishlistsService {
         message: 'В коллекции должен быть хотя бы один подарок',
       });
     }
-    const wishes = await this.wishesRepository.find({
-      where: {
-        id: In(createWishlistDto.itemsId),
-      },
-    });
+    const wishes = await this.wishService.findWishesByIds(
+      createWishlistDto.itemsId,
+    );
 
-    const { itemsId, ...restWishlistData } = createWishlistDto;
     const wishlist = this.wishlistRepository.create({
-      ...restWishlistData,
+      name: createWishlistDto.name,
+      image: createWishlistDto.image,
       owner,
       items: wishes,
     });
@@ -52,15 +53,21 @@ export class WishlistsService {
     return wishlists;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wishlist`;
-  }
+  async remove(id: string, userId: string) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: { id: Number(id) },
+      relations: ['owner'],
+    });
 
-  update(id: number, updateWishlistDto: UpdateWishlistDto) {
-    return `This action updates a #${id} wishlist`;
-  }
+    if (!wishlist) {
+      throw new NotFoundException(`Подарок с id ${id} не найден`);
+    }
 
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+    if (Number(userId) !== wishlist.owner.id) {
+      throw new ForbiddenException('Вы не можете удалить чужой вишлист');
+    }
+    await this.wishlistRepository.remove(wishlist);
+
+    return wishlist;
   }
 }

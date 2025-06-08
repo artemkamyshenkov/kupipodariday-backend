@@ -9,33 +9,31 @@ import {
   Request,
   Patch,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { WishesService } from './wishes.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { JwtGuard } from '../auth/guards/jwt-auth.guard';
 import { WishResponseDto } from './dto/response-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { Serialize } from '../decorators/serialize.decorator';
 
 @Controller('wishes')
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  @Serialize(WishResponseDto)
   @Get('top')
   async findMostPopularWished() {
     const wish = await this.wishesService.findMostPopularWishes();
 
-    return plainToInstance(WishResponseDto, wish, {
-      excludeExtraneousValues: true,
-    });
+    return wish;
   }
 
+  @Serialize(WishResponseDto)
   @Get('last')
   async findLastAddedWished() {
     const wish = await this.wishesService.findLastAddedWishes();
 
-    return plainToInstance(WishResponseDto, wish, {
-      excludeExtraneousValues: true,
-    });
+    return wish;
   }
 
   @UseGuards(JwtGuard)
@@ -44,24 +42,22 @@ export class WishesController {
     return this.wishesService.create(createWishDto, req.user);
   }
 
+  @Serialize(WishResponseDto)
   @UseGuards(JwtGuard)
   @Post(':id/copy')
   async copy(@Param() param: { id: string }, @Request() req) {
     const wish = await this.wishesService.copyWish(param.id, req.user);
 
-    return plainToInstance(WishResponseDto, wish, {
-      excludeExtraneousValues: true,
-    });
+    return wish;
   }
 
+  @Serialize(WishResponseDto)
   @UseGuards(JwtGuard)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const wish = await this.wishesService.findOne(id);
 
-    return plainToInstance(WishResponseDto, wish, {
-      excludeExtraneousValues: true,
-    });
+    return wish;
   }
 
   @UseGuards(JwtGuard)

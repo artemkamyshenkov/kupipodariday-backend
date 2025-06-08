@@ -3,54 +3,43 @@ import {
   Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
   UseGuards,
   Request,
+  Delete,
+  Param,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { WishlistsService } from './wishlists.service';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
-import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { JwtGuard } from '../auth/guards/jwt-auth.guard';
 import { WishlistResponseDto } from './dto/response-wishlist.dto';
+import { Serialize } from '../decorators/serialize.decorator';
 
 @Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
+  @Serialize(WishlistResponseDto)
   @UseGuards(JwtGuard)
   @Post()
   create(@Request() req, @Body() createWishlistDto: CreateWishlistDto) {
     return this.wishlistsService.create(createWishlistDto, req.user);
   }
 
+  @Serialize(WishlistResponseDto)
   @UseGuards(JwtGuard)
   @Get()
   findAll(@Request() req) {
     const wishlists = this.wishlistsService.findAll(req.user);
 
-    return plainToInstance(WishlistResponseDto, wishlists, {
-      excludeExtraneousValues: true,
-    });
+    return wishlists;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishlistsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateWishlistDto: UpdateWishlistDto,
-  ) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
-  }
-
+  @Serialize(WishlistResponseDto)
+  @UseGuards(JwtGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistsService.remove(+id);
+  async remove(@Param('id') id: string, @Request() req) {
+    const wishlist = await this.wishlistsService.remove(id, req.user?.id);
+
+    return wishlist;
   }
 }

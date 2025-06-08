@@ -9,34 +9,40 @@ import {
   Request,
   Req,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from '../auth/guards/jwt-auth.guard';
 import { UserResponseDto } from './dto/response-user.dto';
 import { WishResponseDto } from '../wishes/dto/response-wish.dto';
+import { Serialize } from '../decorators/serialize.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @Serialize(UserResponseDto)
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto) {
+    const user = await this.usersService.create(createUserDto);
+    return user;
   }
 
+  @Serialize(UserResponseDto)
+  @UseGuards(JwtGuard)
   @Post('find')
   findMany(@Body() body: { query: string }) {
     return this.usersService.findMany(body.query);
   }
 
+  @Serialize(UserResponseDto)
   @UseGuards(JwtGuard)
   @Get('me')
   me(@Req() req) {
     return req.user;
   }
 
+  @Serialize(UserResponseDto)
   @UseGuards(JwtGuard)
   @Patch('me')
   update(@Body() updateUserDto: UpdateUserDto, @Req() req) {
@@ -44,36 +50,33 @@ export class UsersController {
     return this.usersService.update(id, updateUserDto);
   }
 
+  @Serialize(UserResponseDto)
   @UseGuards(JwtGuard)
   @Get(':username')
   findUser(@Param() param: { username: string }) {
     const { username } = param;
     const user = this.usersService.findByUsername(username);
 
-    return plainToInstance(UserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
+    return user;
   }
 
+  @Serialize(WishResponseDto)
   @UseGuards(JwtGuard)
   @Get('me/wishes')
   async getMeWishes(@Request() req) {
-    const userId = req.user.id;
-    const wishes = await this.usersService.findUserWishes(userId);
+    const userId = req?.user?.id;
+    const wishes = await this.usersService.getOwnWishes(userId);
 
-    return plainToInstance(WishResponseDto, wishes, {
-      excludeExtraneousValues: true,
-    });
+    return wishes;
   }
 
+  @Serialize(WishResponseDto)
   @UseGuards(JwtGuard)
   @Get(':username/wishes')
   getWishesByUsername(@Param() param: { username: string }) {
     const { username } = param;
-    const wishes = this.usersService.findWishesByUsername(username);
+    const wishes = this.usersService.getUserWishes(username);
 
-    return plainToInstance(WishResponseDto, wishes, {
-      excludeExtraneousValues: true,
-    });
+    return wishes;
   }
 }

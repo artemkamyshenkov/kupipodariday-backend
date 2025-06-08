@@ -6,20 +6,15 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { plainToInstance } from 'class-transformer';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { UserResponseDto } from './dto/response-user.dto';
-import { Wish } from '../wishes/entities/wish.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    @InjectRepository(Wish)
-    private wishesRepository: Repository<Wish>,
   ) {}
 
   async findOne(id: string) {
@@ -48,9 +43,7 @@ export class UsersService {
 
     const savedUser = await this.usersRepository.save(user);
 
-    return plainToInstance(UserResponseDto, savedUser, {
-      excludeExtraneousValues: true,
-    });
+    return savedUser;
   }
 
   async findMany(search: string) {
@@ -61,9 +54,7 @@ export class UsersService {
       ],
     });
 
-    return plainToInstance(UserResponseDto, users, {
-      excludeExtraneousValues: true,
-    });
+    return users;
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -81,9 +72,7 @@ export class UsersService {
     Object.assign(user, updateData);
     const updated = await this.usersRepository.save(user);
 
-    return plainToInstance(UserResponseDto, updated, {
-      excludeExtraneousValues: true,
-    });
+    return updated;
   }
 
   async findByUsername(username: string) {
@@ -94,29 +83,19 @@ export class UsersService {
     return user;
   }
 
-  async findUserWishes(userId: string) {
-    const wish = await this.wishesRepository.find({
-      where: {
-        owner: {
-          id: Number(userId),
-        },
-      },
-      relations: ['owner'],
+  async getOwnWishes(userId: string) {
+    const user = await this.usersRepository.findOne({
+      where: { id: Number(userId) },
+      relations: ['wishes', 'wishes.owner', 'wishes.offers'],
     });
-
-    return wish;
+    return user?.wishes || [];
   }
 
-  async findWishesByUsername(username: string) {
-    const wish = await this.wishesRepository.find({
-      where: {
-        owner: {
-          username,
-        },
-      },
-      relations: ['owner'],
+  async getUserWishes(username: string) {
+    const user = await this.usersRepository.findOne({
+      where: { username },
+      relations: ['wishes', 'wishes.owner', 'wishes.offers'],
     });
-
-    return wish;
+    return user?.wishes || [];
   }
 }

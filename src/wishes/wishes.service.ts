@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -53,7 +53,7 @@ export class WishesService {
     }
 
     if (Number(userId) !== wish.owner.id) {
-      throw new ForbiddenException('Вы не можете редактировать чужой подарок');
+      throw new ForbiddenException('Вы не можете удалить чужой подарок');
     }
     await this.wishesRepository.remove(wish);
 
@@ -146,5 +146,15 @@ export class WishesService {
     const saved = await this.wishesRepository.save(updatedWish);
 
     return saved;
+  }
+
+  async findWishesByIds(ids: number[]) {
+    const wishes = await this.wishesRepository.find({
+      where: {
+        id: In(ids),
+      },
+    });
+
+    return wishes;
   }
 }

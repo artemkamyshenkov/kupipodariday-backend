@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { plainToInstance } from 'class-transformer';
 import { User } from '../users/entities/user.entity';
 import { UsersService } from '../users/users.service';
-import { UserResponseDto } from '../users/dto/response-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,8 +28,6 @@ export class AuthService {
       return null;
     }
 
-    return plainToInstance(UserResponseDto, user, {
-      excludeExtraneousValues: true,
-    });
+    return user;
   }
 }
