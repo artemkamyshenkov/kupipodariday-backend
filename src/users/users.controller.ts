@@ -22,6 +22,43 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Serialize(UserResponseDto)
+  @UseGuards(JwtGuard)
+  @Get('me')
+  me(@Req() req) {
+    return req.user;
+  }
+
+  @Serialize(WishResponseDto)
+  @UseGuards(JwtGuard)
+  @Get('me/wishes')
+  async getMeWishes(@Request() req) {
+    const userId = req?.user?.id;
+    const wishes = await this.usersService.getOwnWishes(userId);
+
+    return wishes;
+  }
+
+  @Serialize(UserResponseDto)
+  @UseGuards(JwtGuard)
+  @Get(':username')
+  findUser(@Param() param: { username: string }) {
+    const { username } = param;
+    const user = this.usersService.findByUsername(username);
+
+    return user;
+  }
+
+  @Serialize(WishResponseDto)
+  @UseGuards(JwtGuard)
+  @Get(':username/wishes')
+  getWishesByUsername(@Param() param: { username: string }) {
+    const { username } = param;
+    const wishes = this.usersService.getUserWishes(username);
+
+    return wishes;
+  }
+
+  @Serialize(UserResponseDto)
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
@@ -37,46 +74,9 @@ export class UsersController {
 
   @Serialize(UserResponseDto)
   @UseGuards(JwtGuard)
-  @Get('me')
-  me(@Req() req) {
-    return req.user;
-  }
-
-  @Serialize(UserResponseDto)
-  @UseGuards(JwtGuard)
   @Patch('me')
   update(@Body() updateUserDto: UpdateUserDto, @Req() req) {
     const { id } = req.user;
     return this.usersService.update(id, updateUserDto);
-  }
-
-  @Serialize(UserResponseDto)
-  @UseGuards(JwtGuard)
-  @Get(':username')
-  findUser(@Param() param: { username: string }) {
-    const { username } = param;
-    const user = this.usersService.findByUsername(username);
-
-    return user;
-  }
-
-  @Serialize(WishResponseDto)
-  @UseGuards(JwtGuard)
-  @Get('me/wishes')
-  async getMeWishes(@Request() req) {
-    const userId = req?.user?.id;
-    const wishes = await this.usersService.getOwnWishes(userId);
-
-    return wishes;
-  }
-
-  @Serialize(WishResponseDto)
-  @UseGuards(JwtGuard)
-  @Get(':username/wishes')
-  getWishesByUsername(@Param() param: { username: string }) {
-    const { username } = param;
-    const wishes = this.usersService.getUserWishes(username);
-
-    return wishes;
   }
 }

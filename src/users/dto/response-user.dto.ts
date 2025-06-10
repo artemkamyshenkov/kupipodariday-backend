@@ -1,4 +1,6 @@
-import { Expose } from 'class-transformer';
+/* eslint-disable max-classes-per-file */
+import { Expose, Type } from 'class-transformer';
+import { WishResponseDto } from '../../wishes/dto/response-wish.dto';
 
 export class UserResponseDto {
   @Expose()
@@ -14,11 +16,14 @@ export class UserResponseDto {
   avatar?: string;
 
   @Expose()
-  email: string;
-
-  @Expose()
   createdAt: string;
 
   @Expose()
   updatedAt: string;
+}
+
+export class UserResponseDtoWithWishes extends UserResponseDto {
+  @Expose()
+  @Type(() => WishResponseDto)
+  wishes: WishResponseDto[];
 }

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UpdateWishDto } from '../wishes/dto/update-wish.dto';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { User } from '../users/entities/user.entity';
 import { Wishlist } from './entities/wishlist.entity';
@@ -69,5 +70,38 @@ export class WishlistsService {
     await this.wishlistRepository.remove(wishlist);
 
     return wishlist;
+  }
+
+  async findOne(id: string) {
+    const wishlists = await this.wishlistRepository.findOne({
+      where: {
+        id: Number(id),
+      },
+      relations: ['owner'],
+    });
+
+    return wishlists;
+  }
+
+  async updateWishlist(id: string, user: User, updateWishDto: UpdateWishDto) {
+    const wishlist = await this.wishlistRepository.findOne({
+      where: {
+        id: Number(id),
+      },
+      relations: ['owner'],
+    });
+
+    if (!wishlist) {
+      throw new NotFoundException('Вишлист не найден');
+    }
+
+    if (wishlist.owner.id !== user.id) {
+      throw new ForbiddenException('Вы не можете редактировать чужой вишлист');
+    }
+
+    Object.assign(wishlist, updateWishDto);
+
+    const updated = await this.wishlistRepository.save(wishlist);
+    return updated;
   }
 }

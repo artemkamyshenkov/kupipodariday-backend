@@ -1,5 +1,6 @@
 import { Expose, Type, Transform } from 'class-transformer';
-import { UserResponseDto } from '../../users/dto/response-user.dto';
+import { UserResponseDtoWithWishes } from '../../users/dto/response-user.dto';
+import { WishResponseDto } from '../../wishes/dto/response-wish.dto';
 
 export class OfferResponseDto {
   @Expose()
@@ -13,12 +14,16 @@ export class OfferResponseDto {
   hidden: boolean;
 
   @Expose()
-  @Type(() => UserResponseDto)
-  user: UserResponseDto;
+  @Type(() => UserResponseDtoWithWishes)
+  user: UserResponseDtoWithWishes;
 
   @Expose()
   createdAt: string;
 
   @Expose()
   updatedAt: string;
+
+  @Expose()
+  @Type(() => WishResponseDto)
+  item: WishResponseDto;
 }

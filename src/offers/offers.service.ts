@@ -27,11 +27,14 @@ export class OffersService {
       throw new BadRequestException('Нельзя скинуться на свой подарок');
     }
 
-    if (wish.raised >= wish.price) {
+    if (parseFloat(String(wish.raised)) >= parseFloat(String(wish.price))) {
       throw new BadRequestException('На подарок уже собраны все деньги');
     }
 
-    if (wish.raised + amount > wish.price) {
+    if (
+      parseFloat(String(wish.raised)) + amount >
+      parseFloat(String(wish.price))
+    ) {
       throw new BadRequestException('Сумма превышает стоимость подарка');
     }
 
@@ -53,12 +56,33 @@ export class OffersService {
       where: {
         id: Number(id),
       },
-      relations: ['user', 'item'],
+      relations: ['user', 'user.wishes', 'item'],
     });
     if (!offer) {
       throw new NotFoundException('Предложение с таким id не найдено');
     }
 
     return offer;
+  }
+
+  async findAll(userId: string) {
+    if (!userId) {
+      throw new BadRequestException('Не передан id пользователя');
+    }
+
+    const offers = await this.offersRepository.find({
+      where: {
+        user: {
+          id: Number(userId),
+        },
+      },
+      relations: ['user', 'user.wishes', 'item', 'item.owner', 'item.offers'],
+    });
+
+    if (!offers?.length) {
+      return [];
+    }
+
+    return offers;
   }
 }

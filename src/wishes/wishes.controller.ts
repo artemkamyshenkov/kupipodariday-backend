@@ -21,6 +21,14 @@ export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Serialize(WishResponseDto)
+  @Get('last')
+  async findLastAddedWished() {
+    const wish = await this.wishesService.findLastAddedWishes();
+
+    return wish;
+  }
+
+  @Serialize(WishResponseDto)
   @Get('top')
   async findMostPopularWished() {
     const wish = await this.wishesService.findMostPopularWishes();
@@ -29,9 +37,10 @@ export class WishesController {
   }
 
   @Serialize(WishResponseDto)
-  @Get('last')
-  async findLastAddedWished() {
-    const wish = await this.wishesService.findLastAddedWishes();
+  @UseGuards(JwtGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    const wish = await this.wishesService.findOne(id);
 
     return wish;
   }
@@ -51,19 +60,10 @@ export class WishesController {
     return wish;
   }
 
-  @Serialize(WishResponseDto)
-  @UseGuards(JwtGuard)
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const wish = await this.wishesService.findOne(id);
-
-    return wish;
-  }
-
   @UseGuards(JwtGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req) {
-    return this.wishesService.remove(id, req.user.id);
+    return this.wishesService.remove(id, req.user?.id);
   }
 
   @UseGuards(JwtGuard)

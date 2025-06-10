@@ -46,6 +46,7 @@ export class WishesService {
   async remove(id: string, userId: string) {
     const wish = await this.wishesRepository.findOne({
       where: { id: Number(id) },
+      relations: ['owner', 'offers', 'offers.user'],
     });
 
     if (!wish) {
@@ -55,9 +56,10 @@ export class WishesService {
     if (Number(userId) !== wish.owner.id) {
       throw new ForbiddenException('Вы не можете удалить чужой подарок');
     }
-    await this.wishesRepository.remove(wish);
 
-    return wish;
+    const deleted = await this.wishesRepository.remove(wish);
+
+    return deleted;
   }
 
   /** 40 последних добавленных подарков */
