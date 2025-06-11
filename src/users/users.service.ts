@@ -26,12 +26,16 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto) {
-    const existing = await this.usersRepository.findOneBy({
-      email: createUserDto.email,
+    const existing = await this.usersRepository.findOne({
+      where: [
+        { email: createUserDto.email },
+        { username: createUserDto.username },
+      ],
     });
+
     if (existing) {
       throw new BadRequestException(
-        'Пользователь с таким email уже существует',
+        'Пользователь с таким email или username уже существует',
       );
     }
 
@@ -86,7 +90,12 @@ export class UsersService {
   async getOwnWishes(userId: string) {
     const user = await this.usersRepository.findOne({
       where: { id: Number(userId) },
-      relations: ['wishes', 'wishes.owner', 'wishes.offers'],
+      relations: [
+        'wishes',
+        'wishes.owner',
+        'wishes.offers',
+        'wishes.offers.user',
+      ],
     });
     return user?.wishes || [];
   }
@@ -94,7 +103,12 @@ export class UsersService {
   async getUserWishes(username: string) {
     const user = await this.usersRepository.findOne({
       where: { username },
-      relations: ['wishes', 'wishes.owner', 'wishes.offers'],
+      relations: [
+        'wishes',
+        'wishes.owner',
+        'wishes.offers',
+        'wishes.offers.user',
+      ],
     });
     return user?.wishes || [];
   }

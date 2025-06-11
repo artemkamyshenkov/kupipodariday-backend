@@ -27,3 +27,8 @@ export class UserResponseDtoWithWishes extends UserResponseDto {
   @Type(() => WishResponseDto)
   wishes: WishResponseDto[];
 }
+
+export class UserResponseDtoWithEmail extends UserResponseDto {
+  @Expose()
+  email: string;
+}

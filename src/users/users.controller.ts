@@ -13,7 +13,10 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from '../auth/guards/jwt-auth.guard';
-import { UserResponseDto } from './dto/response-user.dto';
+import {
+  UserResponseDto,
+  UserResponseDtoWithEmail,
+} from './dto/response-user.dto';
 import { WishResponseDto } from '../wishes/dto/response-wish.dto';
 import { Serialize } from '../decorators/serialize.decorator';
 
@@ -21,7 +24,7 @@ import { Serialize } from '../decorators/serialize.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Serialize(UserResponseDto)
+  @Serialize(UserResponseDtoWithEmail)
   @UseGuards(JwtGuard)
   @Get('me')
   me(@Req() req) {
@@ -72,7 +75,7 @@ export class UsersController {
     return this.usersService.findMany(body.query);
   }
 
-  @Serialize(UserResponseDto)
+  @Serialize(UserResponseDtoWithEmail)
   @UseGuards(JwtGuard)
   @Patch('me')
   update(@Body() updateUserDto: UpdateUserDto, @Req() req) {
