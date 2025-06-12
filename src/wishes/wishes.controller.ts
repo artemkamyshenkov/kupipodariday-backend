@@ -60,6 +60,7 @@ export class WishesController {
     return wish;
   }
 
+  @Serialize(WishResponseDto)
   @UseGuards(JwtGuard)
   @Delete(':id')
   remove(@Param('id') id: string, @Request() req) {

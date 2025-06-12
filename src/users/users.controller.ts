@@ -62,13 +62,6 @@ export class UsersController {
   }
 
   @Serialize(UserResponseDto)
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return user;
-  }
-
-  @Serialize(UserResponseDto)
   @UseGuards(JwtGuard)
   @Post('find')
   findMany(@Body() body: { query: string }) {
