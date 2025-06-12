@@ -1,5 +1,5 @@
 import {
-  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -34,7 +34,7 @@ export class UsersService {
     });
 
     if (existing) {
-      throw new BadRequestException(
+      throw new ConflictException(
         'Пользователь с таким email или username уже существует',
       );
     }

@@ -21,8 +21,8 @@ export class OffersController {
   @UseGuards(JwtGuard)
   @Post()
   async create(@Body() createOfferDto: CreateOfferDto, @Request() req) {
-    const offer = await this.offersService.create(createOfferDto, req?.user);
-    return offer;
+    await this.offersService.create(createOfferDto, req?.user);
+    return {};
   }
 
   @Serialize(OfferResponseDto)

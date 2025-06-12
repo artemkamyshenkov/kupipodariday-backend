@@ -23,18 +23,16 @@ export class WishlistsController {
   @Serialize(WishlistResponseDto)
   @UseGuards(JwtGuard)
   @Get()
-  findAll(@Request() req) {
-    const wishlists = this.wishlistsService.findAll(req.user);
-
+  async findAll(@Request() req) {
+    const wishlists = await this.wishlistsService.findAll(req.user);
     return wishlists;
   }
 
   @Serialize(WishlistResponseDto)
   @UseGuards(JwtGuard)
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    const wishlists = this.wishlistsService.findOne(id);
-
+  async findOne(@Param('id') id: string) {
+    const wishlists = await this.wishlistsService.findOne(id);
     return wishlists;
   }
 
@@ -43,29 +41,33 @@ export class WishlistsController {
   @Delete(':id')
   async remove(@Param('id') id: string, @Request() req) {
     const wishlist = await this.wishlistsService.remove(id, req.user?.id);
-
     return wishlist;
   }
 
   @Serialize(WishlistResponseDto)
   @UseGuards(JwtGuard)
   @Post()
-  create(@Request() req, @Body() createWishlistDto: CreateWishlistDto) {
-    return this.wishlistsService.create(createWishlistDto, req.user);
+  async create(@Request() req, @Body() createWishlistDto: CreateWishlistDto) {
+    const wishlist = await this.wishlistsService.create(
+      createWishlistDto,
+      req.user,
+    );
+    return wishlist;
   }
 
   @Serialize(WishlistResponseDto)
   @UseGuards(JwtGuard)
   @Patch(':id')
-  update(
+  async update(
     @Request() req,
     @Body() updateWishlistDto: UpdateWishlistDto,
     @Param('id') id: string,
   ) {
-    return this.wishlistsService.updateWishlist(
+    const wishlist = await this.wishlistsService.updateWishlist(
       id,
       req?.user,
       updateWishlistDto,
     );
+    return wishlist;
   }
 }

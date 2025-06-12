@@ -24,8 +24,8 @@ export class WishesService {
       owner,
     });
 
-    const saved = await this.wishesRepository.save(wish);
-    return saved;
+    await this.wishesRepository.save(wish);
+    return {};
   }
 
   async findOne(id: string) {

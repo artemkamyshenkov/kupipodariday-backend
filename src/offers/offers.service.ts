@@ -46,9 +46,9 @@ export class OffersService {
     });
 
     await this.wishService.addRaisedAmount(wish, amount);
-    const savedOffer = await this.offersRepository.save(offer);
+    await this.offersRepository.save(offer);
 
-    return savedOffer;
+    return {};
   }
 
   async findOne(id: string) {
